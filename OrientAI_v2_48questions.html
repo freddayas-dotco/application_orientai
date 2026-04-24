@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OrientAI — Votre orientation par les soft skills & le MBTI</title>
+<meta name="description" content="Découvrez les métiers qui vous correspondent grâce à 48 questions sur vos soft skills et votre profil MBTI. 1170 métiers analysés."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM
+═══════════════════════════════════════════════ */
+:root{
+  --bg:#08080f;
+  --bg2:#0f0f1e;
+  --bg3:#14142a;
+  --card:#1a1a30;
+  --card2:#20203a;
+  --border:#2a2a4a;
+  --text:#f0f0ff;
+  --text2:#9090bb;
+  --text3:#5050aa;
+  --accent:#7c5cfc;
+  --accent2:#a78bfa;
+  --cyan:#22d3ee;
+  --gold:#fbbf24;
+  --green:#4ade80;
+  --pink:#f472b6;
+  --red:#f87171;
+  --r:1rem;
+  --r2:1.5rem;
+  --shadow:0 24px 80px rgba(0,0,0,.6);
+  --glow:0 0 40px rgba(124,92,252,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse at 20% 0%,rgba(124,92,252,.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 10%,rgba(34,211,238,.08) 0%,transparent 40%);
+}
+
+/* ─── SCREEN SYSTEM ─── */
+.screen{display:none;min-height:100vh;animation:fadeIn .4s ease;}
+.screen.active{display:flex;flex-direction:column;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+
+/* ─── PARTICLES BG ─── */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.particle{
+  position:absolute;border-radius:50%;
+  animation:float linear infinite;
+  opacity:.04;
+}
+@keyframes float{0%{transform:translateY(100vh) rotate(0);}100%{transform:translateY(-10vh) rotate(360deg);}}
+
+/* ─── GLASS CARD ─── */
+.glass{
+  background:rgba(26,26,48,.7);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  box-shadow:var(--shadow),var(--glow);
+}
+
+/* ─── BUTTONS ─── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.85rem 2rem;border-radius:999px;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;
+  transition:all .2s;text-decoration:none;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent) 0%,#5b4fcf 100%);
+  color:#fff;box-shadow:0 8px 32px rgba(124,92,252,.35);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(124,92,252,.5);}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--card);color:var(--text);}
+.btn-sm{padding:.5rem 1.2rem;font-size:.875rem;}
+.btn-icon{padding:.85rem;border-radius:50%;}
+
+/* ─── NAV ─── */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 2rem;position:sticky;top:0;z-index:100;
+  background:rgba(8,8,15,.8);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  font-size:1.4rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent2),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-.02em;
+}
+.logo span{color:var(--gold);-webkit-text-fill-color:var(--gold);}
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap{
+  width:100%;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;
+  margin:.75rem 0;
+}
+.progress-bar{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--accent),var(--cyan));
+  transition:width .4s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── TAGS ─── */
+.tag{
+  display:inline-block;padding:.2rem .75rem;border-radius:999px;
+  font-size:.75rem;font-weight:600;letter-spacing:.03em;
+}
+.tag-accent{background:rgba(124,92,252,.2);color:var(--accent2);}
+.tag-cyan{background:rgba(34,211,238,.15);color:var(--cyan);}
+.tag-gold{background:rgba(251,191,36,.15);color:var(--gold);}
+.tag-green{background:rgba(74,222,128,.15);color:var(--green);}
+.tag-pink{background:rgba(244,114,182,.15);color:var(--pink);}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 1 — ACCUEIL
+═══════════════════════════════════════════════ */
+#screen-accueil{
+  align-items:center;justify-content:center;
+  padding:2rem;text-align:center;gap:3rem;
+}
+.hero{max-width:680px;margin:0 auto;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.4rem 1.2rem;border-radius:999px;
+  background:rgba(124,92,252,.15);border:1px solid rgba(124,92,252,.3);
+  font-size:.8rem;font-weight:600;color:var(--accent2);margin-bottom:1.5rem;
+}
+.hero h1{
+  font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;
+  line-height:1.05;letter-spacing:-.04em;margin-bottom:1.25rem;
+}
+.hero h1 .grad{
+  background:linear-gradient(135deg,var(--accent2) 0%,var(--cyan) 50%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero p{font-size:1.15rem;color:var(--text2);line-height:1.7;margin-bottom:2.5rem;}
+.profile-cards{
+  display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap;
+}
+.profile-card{
+  padding:2rem 1.75rem;border-radius:var(--r2);cursor:pointer;
+  border:1.5px solid var(--border);background:var(--card);
+  transition:all .25s;text-align:center;min-width:160px;
+  position:relative;overflow:hidden;
+}
+.profile-card::before{
+  content:'';position:absolute;inset:0;
+  background:var(--gradient,linear-gradient(135deg,var(--accent),var(--cyan)));
+  opacity:0;transition:.25s;
+}
+.profile-card:hover::before{opacity:.08;}
+.profile-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.profile-card .icon{font-size:2.5rem;margin-bottom:.75rem;display:block;}
+.profile-card h3{font-size:1rem;font-weight:700;margin-bottom:.25rem;}
+.profile-card p{font-size:.8rem;color:var(--text2);}
+.stats-row{
+  display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;
+  padding:1.5rem 2rem;background:var(--bg2);border-radius:var(--r);
+  border:1px solid var(--border);
+}
+.stat{text-align:center;}
+.stat .n{font-size:1.75rem;font-weight:800;color:var(--accent2);}
+.stat .l{font-size:.8rem;color:var(--text2);}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 2 — QUIZ
+═══════════════════════════════════════════════ */
+#screen-quiz{padding:0;}
+.quiz-header{
+  padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--border);
+}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
+.quiz-ss-label{
+  font-size:.85rem;font-weight:700;color:var(--accent2);letter-spacing:.06em;text-transform:uppercase;
+}
+.quiz-counter{font-size:.85rem;color:var(--text3);}
+.quiz-body{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:2rem;
+}
+.quiz-card{
+  width:100%;max-width:700px;padding:2.5rem;
+}
+.question-sous-cat{
+  font-size:.75rem;font-weight:600;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;
+}
+.question-text{
+  font-size:1.2rem;font-weight:600;line-height:1.6;
+  margin-bottom:2rem;color:var(--text);
+}
+.options{display:grid;gap:.75rem;}
+.option{
+  display:flex;align-items:flex-start;gap:1rem;
+  padding:1rem 1.25rem;border-radius:var(--r);
+  border:1.5px solid var(--border);background:var(--card2);
+  cursor:pointer;transition:all .2s;
+}
+.option:hover{border-color:var(--accent);background:rgba(124,92,252,.08);}
+.option.selected{
+  border-color:var(--accent);background:rgba(124,92,252,.15);
+}
+.option.correct{border-color:var(--green);background:rgba(74,222,128,.1);}
+.option-letter{
+  flex-shrink:0;width:2rem;height:2rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.825rem;font-weight:700;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);transition:.2s;
+}
+.option.selected .option-letter{background:var(--accent);border-color:var(--accent);color:#fff;}
+.option-text{font-size:.95rem;line-height:1.5;color:var(--text2);}
+
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 3 — PROFIL
+═══════════════════════════════════════════════ */
+#screen-profil{padding:2rem;gap:2rem;align-items:center;}
+.profil-wrap{width:100%;max-width:800px;}
+.profil-header{margin-bottom:2rem;text-align:center;}
+.profil-header h2{font-size:2rem;font-weight:800;margin-bottom:.5rem;}
+
+.mbti-box{
+  display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;
+  margin:1.25rem 0;
+}
+.mbti-letter{
+  width:70px;height:70px;border-radius:var(--r);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;
+  font-size:2rem;font-weight:900;
+  background:linear-gradient(135deg,var(--accent),#5b4fcf);
+  box-shadow:0 8px 24px rgba(124,92,252,.3);
+}
+.mbti-letter small{font-size:.6rem;font-weight:500;opacity:.7;text-transform:uppercase;}
+
+.mbti-desc{
+  padding:1rem 1.5rem;border-radius:var(--r);
+  background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.2);
+  font-size:.9rem;color:var(--text2);text-align:center;margin-bottom:1.5rem;
+}
+
+.ss-bars{display:grid;gap:.875rem;margin-bottom:2rem;}
+.ss-bar-item{}
+.ss-bar-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:.4rem;
+}
+.ss-bar-name{font-size:.875rem;font-weight:600;}
+.ss-bar-level{
+  font-size:.75rem;font-weight:700;padding:.15rem .6rem;border-radius:999px;
+}
+.ss-bar-bg{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.ss-bar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+.level-1 .ss-bar-fill{background:linear-gradient(90deg,#f87171,#fbbf24);}
+.level-2 .ss-bar-fill{background:linear-gradient(90deg,#fbbf24,#4ade80);}
+.level-3 .ss-bar-fill{background:linear-gradient(90deg,#4ade80,#22d3ee);}
+.level-1 .ss-bar-level{background:rgba(248,113,113,.15);color:#f87171;}
+.level-2 .ss-bar-level{background:rgba(251,191,36,.15);color:#fbbf24;}
+.level-3 .ss-bar-level{background:rgba(74,222,128,.15);color:#4ade80;}
+
+.filters-section{margin-bottom:1.5rem;}
+.filters-section h3{font-size:.875rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+.filters-grid{display:flex;gap:.5rem;flex-wrap:wrap;}
+.filter-select{
+  background:var(--card2);border:1px solid var(--border);
+  color:var(--text);border-radius:.5rem;padding:.5rem 1rem;
+  font-family:'Inter',sans-serif;font-size:.875rem;cursor:pointer;
+  flex:1;min-width:200px;
+}
+.filter-select:focus{outline:none;border-color:var(--accent);}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 4 — LOADING
+═══════════════════════════════════════════════ */
+#screen-loading{
+  align-items:center;justify-content:center;gap:2rem;text-align:center;
+}
+.spinner-wrap{position:relative;width:100px;height:100px;}
+.spinner{
+  width:100px;height:100px;border-radius:50%;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  border-right-color:var(--cyan);
+  animation:spin 1s linear infinite;
+}
+.spinner-inner{
+  position:absolute;inset:12px;border-radius:50%;
+  border:3px solid transparent;
+  border-top-color:var(--gold);
+  animation:spin .7s linear infinite reverse;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:1.1rem;font-weight:600;color:var(--text2);}
+.loading-dots span{animation:blink 1.4s infinite;display:inline-block;}
+.loading-dots span:nth-child(2){animation-delay:.2s;}
+.loading-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 5 — RÉSULTATS
+═══════════════════════════════════════════════ */
+#screen-resultats{padding:1.5rem 1rem;}
+.resultats-header{text-align:center;padding:1.5rem;margin-bottom:1.5rem;}
+.resultats-header h2{font-size:1.75rem;font-weight:800;margin-bottom:.5rem;}
+.resultats-header p{color:var(--text2);font-size:.95rem;}
+.resultats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:1rem;
+  max-width:1200px;margin:0 auto 2rem;
+}
+.metier-card{
+  padding:1.25rem 1.5rem;border-radius:var(--r);
+  border:1.5px solid var(--border);background:var(--card);
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.metier-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(180deg,var(--accent),var(--cyan));
+  border-radius:2px 0 0 2px;
+}
+.metier-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.metier-rank{
+  position:absolute;top:1rem;right:1rem;
+  font-size:.75rem;font-weight:700;color:var(--text3);
+}
+.metier-score{
+  font-size:2rem;font-weight:900;
+  line-height:1;margin-bottom:.25rem;
+}
+.metier-score.s-high{color:var(--green);}
+.metier-score.s-mid{color:var(--gold);}
+.metier-score.s-low{color:var(--text2);}
+.metier-name{font-size:1rem;font-weight:700;margin-bottom:.5rem;line-height:1.3;}
+.metier-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem;}
+.metier-actions{display:flex;gap:.5rem;align-items:center;margin-top:.75rem;}
+.metier-desc{
+  font-size:.8rem;color:var(--text2);line-height:1.5;
+  margin-bottom:.5rem;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.btn-onisep{
+  font-size:.75rem;padding:.35rem .9rem;
+  background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2);
+  border-radius:999px;text-decoration:none;font-weight:600;
+  transition:.2s;display:inline-flex;align-items:center;gap:.3rem;
+}
+.btn-onisep:hover{background:rgba(34,211,238,.2);}
+.no-lien{font-size:.75rem;color:var(--text3);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:600px){
+  .profile-cards{flex-direction:column;align-items:center;}
+  .profile-card{width:100%;max-width:320px;}
+  .mbti-letter{width:55px;height:55px;font-size:1.5rem;}
+  .quiz-card{padding:1.5rem;}
+  .question-text{font-size:1rem;}
+  .resultats-grid{grid-template-columns:1fr;}
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+/* ─── CHIP FILTER ACTIVE ─── */
+.filter-chip{
+  padding:.4rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;
+  border:1px solid var(--border);background:var(--card2);color:var(--text2);
+  cursor:pointer;transition:.2s;
+}
+.filter-chip.active{background:rgba(124,92,252,.2);border-color:var(--accent);color:var(--accent2);}
+.filter-chip:hover{border-color:var(--accent);}
+
+/* ─── PROFIL SUMMARY ─── */
+.profil-summary-bar{
+  display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;margin-bottom:1.5rem;
+}
+</style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- ═══════════════════════════════════
+     SCREEN 1 — ACCUEIL
+═══════════════════════════════════ -->
+<section class="screen active" id="screen-accueil">
+  <nav class="nav">
+    <div class="logo">Orient<span>AI</span></div>
+    <div class="tag tag-accent">v2.0 · 2026</div>
+  </nav>
+
+  <div class="hero" style="padding:4rem 1.5rem 0;">
+    <div class="hero-badge">
+      <span>⚡</span>
+      Orientation par les Soft Skills & MBTI
+    </div>
+    <h1>Trouvez votre voie<br/><span class="grad">avec l'intelligence</span></h1>
+    <p>48 questions · Votre profil de soft skills + type MBTI · Les métiers qui vous correspondent parmi <strong style="color:var(--text)">1 156 fiches</strong></p>
+
+    <div class="profile-cards">
+      <div class="profile-card" onclick="startQuiz('college')" style="--gradient:linear-gradient(135deg,#f472b6,#a78bfa)">
+        <span class="icon">🎒</span>
+        <h3>Collégien·ne</h3>
+        <p>Questions adaptées au collège</p>
+      </div>
+      <div class="profile-card" onclick="startQuiz('lycee')" style="--gradient:linear-gradient(135deg,#7c5cfc,#22d3ee)">
+        <span class="icon">🎓</span>
+        <h3>Lycéen·ne</h3>
+        <p>Questions niveau lycée</p>
+      </div>
+      <div class="profile-card" onclick="startQuiz('adulte')" style="--gradient:linear-gradient(135deg,#fbbf24,#f97316)">
+        <span class="icon">💼</span>
+        <h3>Adulte</h3>
+        <p>Contexte professionnel</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row" style="max-width:520px;margin:0 auto 3rem;">
+    <div class="stat"><div class="n" id="stat-metiers">1 156</div><div class="l">Métiers</div></div>
+    <div class="stat"><div class="n">48</div><div class="l">Questions</div></div>
+    <div class="stat"><div class="n">61</div><div class="l">Secteurs</div></div>
+    <div class="stat"><div class="n">16</div><div class="l">Types MBTI</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 2 — QUIZ
+═══════════════════════════════════ -->
+<section class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <div class="quiz-meta">
+      <span class="quiz-ss-label" id="quiz-ss-label">Communication</span>
+      <span class="quiz-counter" id="quiz-counter">Question 1/48</span>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="quiz-progress" style="width:0%"></div></div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="quiz-card glass">
+      <div class="question-sous-cat" id="q-sous-cat"></div>
+      <div class="question-text" id="q-text">Question en cours de chargement…</div>
+      <div class="options" id="q-options"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost btn-sm" id="btn-prev" onclick="prevQuestion()">← Précédent</button>
+        <button class="btn btn-primary btn-sm" id="btn-next" onclick="nextQuestion()" style="display:none">Suivant →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 3 — PROFIL
+═══════════════════════════════════ -->
+<section class="screen" id="screen-profil">
+  <nav class="nav">
+    <div class="logo">Orient<span>AI</span></div>
+    <button class="btn btn-ghost btn-sm" onclick="showScreen('screen-accueil')">⟵ Accueil</button>
+  </nav>
+
+  <div class="profil-wrap">
+    <div class="profil-header glass" style="padding:2rem;border-radius:var(--r2);margin-bottom:2rem;">
+      <p style="font-size:.8rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">Votre profil</p>
+      <h2 id="profil-titre">Mon profil OrientAI</h2>
+
+      <div class="mbti-box" id="mbti-box"></div>
+      <div class="mbti-desc" id="mbti-desc"></div>
+
+      <div class="ss-bars" id="ss-bars"></div>
+    </div>
+
+    <div class="glass" style="padding:1.5rem;border-radius:var(--r2);margin-bottom:1.5rem;">
+      <div class="filters-section">
+        <h3>🎯 Filtrer les résultats (optionnel)</h3>
+        <div class="filters-grid" style="margin-bottom:1rem;">
+          <select class="filter-select" id="filter-secteur">
+            <option value="">Tous les secteurs</option>
+          </select>
+          <select class="filter-select" id="filter-niveau">
+            <option value="">Tous les niveaux</option>
+            <option>Opérationnel</option>
+            <option>Manager</option>
+            <option>Responsable</option>
+            <option>Directeur</option>
+            <option>PDG / Dirigeant</option>
+            <option>Entrepreneur</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="lancerMatching()" style="width:100%;font-size:1.05rem;padding:1rem;">
+        🚀 Voir mes métiers
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 4 — LOADING
+═══════════════════════════════════ -->
+<section class="screen" id="screen-loading">
+  <div class="spinner-wrap">
+    <div class="spinner"></div>
+    <div class="spinner-inner"></div>
+  </div>
+  <div class="loading-text">Calcul de votre profil <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+  <p style="color:var(--text3);font-size:.875rem;">Analyse de 1 156 métiers en cours</p>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 5 — RÉSULTATS
+═══════════════════════════════════ -->
+<section class="screen" id="screen-resultats">
+  <nav class="nav" style="position:sticky;top:0;">
+    <div class="logo">Orient<span>AI</span></div>
+    <div style="display:flex;gap:.75rem;align-items:center;">
+      <div class="tag tag-accent" id="res-mbti-tag">INTJ</div>
+      <button class="btn btn-ghost btn-sm" onclick="showScreen('screen-profil')">← Modifier</button>
+      <button class="btn btn-primary btn-sm" onclick="recommencer()">↺ Recommencer</button>
+    </div>
+  </nav>
+
+  <div class="resultats-header">
+    <h2>Vos métiers compatibles</h2>
+    <p id="res-subtitle">Top 30 métiers calculés sur votre profil</p>
+  </div>
+
+  <!-- Profil summary chips -->
+  <div class="profil-summary-bar" id="res-summary"></div>
+
+  <div class="resultats-grid" id="resultats-grid"></div>
+
+  <div style="text-align:center;padding:2rem;">
+    <button class="btn btn-primary" onclick="recommencer()">↺ Nouveau questionnaire</button>
+  </div>
+</section>
+
+<!-- DATA EXTERNE -->
+<script src="orientai_data.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ÉTAT GLOBAL
+═══════════════════════════════════════════════ */
+let mode = null;        // 'lycee'|'adulte'|'college'
+let questions = [];     // questions actives
+let currentQ = 0;
+let answers = {};       // {idx: 0..3}
+let computedSS = [];    // [1..3]×8
+let computedMBTI = '';  // 'INTJ'
+
+const SS_LABELS = ["Communication","Esprit critique","Éthique","Intelligence émotionnelle","Intelligence sociale","Management de projet","Management d'équipe","Organisation"];
+
+const MBTI_DESCS = {
+  INTJ:"Architecte — Visionnaire logique, stratège indépendant.",
+  INTP:"Logicien — Penseur analytique, curieux et inventif.",
+  ENTJ:"Commandant — Leader charismatique, décideur et organisateur.",
+  ENTP:"Innovateur — Débateur créatif, aimant résoudre des problèmes.",
+  INFJ:"Avocat — Idéaliste inspirant, empathique et déterminé.",
+  INFP:"Médiateur — Rêveur créatif, guidé par ses valeurs profondes.",
+  ENFJ:"Protagoniste — Leader chaleureux, empathique et convaincant.",
+  ENFP:"Animateur — Enthousiaste créatif, aimant les connexions.",
+  ISTJ:"Logisticien — Fiable, méthodique, sens du devoir.",
+  ISFJ:"Défenseur — Dévoué, attentionné, protecteur des traditions.",
+  ESTJ:"Dirigeant — Organisateur efficace, autorité et structure.",
+  ESFJ:"Consul — Social, attentif aux autres, sens de l'harmonie.",
+  ISTP:"Virtuose — Pragmatique curieux, maître de la mécanique.",
+  ISFP:"Aventurier — Artiste sensible, spontané et ouvert.",
+  ESTP:"Entrepreneur — Dynamique, pragmatique, aime l'action.",
+  ESFP:"Animateur scène — Spontané, enthousiaste, aime le plaisir."
+};
+
+/* ═══════════════════════════════════════════════
+   PARTICLES
+═══════════════════════════════════════════════ */
+(function initParticles(){
+  const c=document.getElementById('particles');
+  const colors=['#7c5cfc','#22d3ee','#fbbf24','#a78bfa'];
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const sz=Math.random()*6+3;
+    p.style.cssText=`
+      width:${sz}px;height:${sz}px;
+      background:${colors[i%colors.length]};
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*25+15}s;
+      animation-delay:${Math.random()*15}s;
+    `;
+    c.appendChild(p);
+  }
+})();
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════════════════════
+   QUIZ
+═══════════════════════════════════════════════ */
+function startQuiz(m){
+  mode=m;
+  questions=(m==='college')?ORIENTAI_Q_COLLEGE:ORIENTAI_Q_LYCEE;
+  // Déduplique / nettoie
+  questions=questions.filter(q=>q.q&&q.a&&q.a.length===4);
+  currentQ=0;
+  answers={};
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=questions[currentQ];
+  if(!q) return;
+
+  const total=questions.length;
+  document.getElementById('quiz-counter').textContent=`Question ${currentQ+1}/${total}`;
+  document.getElementById('quiz-progress').style.width=`${(currentQ/total)*100}%`;
+  document.getElementById('quiz-ss-label').textContent=SS_LABELS[q.ss]||'';
+  document.getElementById('q-sous-cat').textContent=q.sous_cat||'';
+  document.getElementById('q-text').textContent=q.q;
+
+  const opts=document.getElementById('q-options');
+  opts.innerHTML='';
+  ['A','B','C','D'].forEach((letter,i)=>{
+    const div=document.createElement('div');
+    div.className='option'+(answers[currentQ]===i?' selected':'');
+    div.id=`opt-${i}`;
+    div.innerHTML=`
+      <div class="option-letter">${letter}</div>
+      <div class="option-text">${q.a[i]||''}</div>
+    `;
+    div.onclick=()=>selectOption(i);
+    opts.appendChild(div);
+  });
+
+  document.getElementById('btn-prev').style.display=currentQ===0?'none':'';
+  document.getElementById('btn-next').style.display=answers[currentQ]!==undefined?'':'none';
+}
+
+function selectOption(i){
+  answers[currentQ]=i;
+  document.querySelectorAll('.option').forEach((el,idx)=>{
+    el.classList.toggle('selected',idx===i);
+  });
+  document.getElementById('btn-next').style.display='';
+
+  // Auto-avance après 300ms
+  setTimeout(()=>{
+    if(currentQ<questions.length-1){
+      currentQ++;
+      renderQuestion();
+    } else {
+      computeResults();
+    }
+  },320);
+}
+
+function nextQuestion(){
+  if(currentQ<questions.length-1){currentQ++;renderQuestion();}
+  else computeResults();
+}
+
+function prevQuestion(){
+  if(currentQ>0){currentQ--;renderQuestion();}
+}
+
+/* ═══════════════════════════════════════════════
+   CALCUL SS + MBTI
+═══════════════════════════════════════════════ */
+function computeResults(){
+  showScreen('screen-loading');
+
+  setTimeout(()=>{
+    // SS scores
+    const ssRaw=[0,0,0,0,0,0,0,0];
+    const ssMax=[0,0,0,0,0,0,0,0];
+
+    questions.forEach((q,i)=>{
+      const ans=answers[i];
+      if(ans===undefined) return;
+      const idx=q.ss;
+      if(idx===undefined||idx<0||idx>7) return;
+
+      ssMax[idx]+=2;
+
+      let pts=0;
+      if(q.scoring==='normal'){
+        if(ans===0) pts=2;
+        else if(ans===1) pts=1;
+      } else {
+        if(ans===2) pts=2;
+        else if(ans===3) pts=1;
+      }
+      ssRaw[idx]+=pts;
+    });
+
+    // Normalise en niveau 1/2/3
+    computedSS=ssRaw.map((raw,i)=>{
+      const max=ssMax[i]||1;
+      const pct=raw/max;
+      if(pct>=0.65) return 3;
+      if(pct>=0.35) return 2;
+      return 1;
+    });
+
+    // MBTI
+    const mbtiCounts={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+    questions.forEach((q,i)=>{
+      const ans=answers[i];
+      if(ans===undefined||!q.mbti) return;
+      const dim=q.mbti; // 'EI','SN','TF','JP'
+      if(!dim) return;
+
+      let letter=null;
+      // Normal: A=first letter, B=second letter du couple
+      // Inversé: C=second, D=first (ou inverse)
+      const [l1,l2]=dim.split('');
+      if(q.scoring==='normal'){
+        if(ans===0||ans===1) letter=l1;
+        else letter=l2;
+      } else {
+        if(ans===2||ans===3) letter=l1;
+        else letter=l2;
+      }
+      if(letter && mbtiCounts[letter]!==undefined) mbtiCounts[letter]++;
+    });
+
+    computedMBTI=
+      (mbtiCounts.E>=mbtiCounts.I?'E':'I')+
+      (mbtiCounts.S>=mbtiCounts.N?'S':'N')+
+      (mbtiCounts.T>=mbtiCounts.F?'T':'F')+
+      (mbtiCounts.J>=mbtiCounts.P?'J':'P');
+
+    renderProfil();
+    showScreen('screen-profil');
+  }, 1200);
+}
+
+/* ═══════════════════════════════════════════════
+   PROFIL
+═══════════════════════════════════════════════ */
+function renderProfil(){
+  // MBTI
+  document.getElementById('profil-titre').textContent=
+    `Profil ${computedMBTI} — ${MBTI_DESCS[computedMBTI]?.split('—')[0]?.trim()||computedMBTI}`;
+
+  const mbtiBox=document.getElementById('mbti-box');
+  mbtiBox.innerHTML='';
+  const lbels={0:'Énergie',1:'Info',2:'Décision',3:'Action'};
+  computedMBTI.split('').forEach((l,i)=>{
+    mbtiBox.innerHTML+=`<div class="mbti-letter">${l}<small>${lbels[i]||''}</small></div>`;
+  });
+
+  document.getElementById('mbti-desc').textContent=
+    MBTI_DESCS[computedMBTI]||'Profil MBTI calculé depuis vos réponses.';
+
+  // SS bars
+  const ssContainer=document.getElementById('ss-bars');
+  ssContainer.innerHTML='';
+  const levelLabels=['','Peu nécessaire','Nécessaire','Absolument nécessaire'];
+  const pcts=[0,33,66,100];
+  computedSS.forEach((lv,i)=>{
+    const pct=pcts[lv]||0;
+    ssContainer.innerHTML+=`
+      <div class="ss-bar-item level-${lv}">
+        <div class="ss-bar-header">
+          <span class="ss-bar-name">${SS_LABELS[i]}</span>
+          <span class="ss-bar-level">${levelLabels[lv]||lv}</span>
+        </div>
+        <div class="ss-bar-bg">
+          <div class="ss-bar-fill" style="width:${pct}%"></div>
+        </div>
+      </div>
+    `;
+  });
+
+  // Populate sector filter
+  const secteurs=new Set();
+  ORIENTAI_METIERS.forEach(m=>{
+    if(m.s) m.s.split(' ; ').forEach(s=>secteurs.add(s.trim()));
+  });
+  const sel=document.getElementById('filter-secteur');
+  sel.innerHTML='<option value="">Tous les secteurs</option>';
+  [...secteurs].sort().forEach(s=>{
+    sel.innerHTML+=`<option value="${s}">${s}</option>`;
+  });
+
+  document.getElementById('stat-metiers').textContent=ORIENTAI_METIERS.length.toLocaleString('fr');
+}
+
+/* ═══════════════════════════════════════════════
+   MATCHING
+═══════════════════════════════════════════════ */
+function computeScore(ss_user, mbti_user, metier){
+  // SS score (70%)
+  let ss_score=0;
+  for(let i=0;i<8;i++){
+    const diff=Math.abs(ss_user[i]-metier.ss[i]);
+    if(diff===0) ss_score+=3;
+    else if(diff===1) ss_score+=1.5;
+  }
+  const ss_pct=ss_score/(8*3);
+
+  // MBTI bonus (30%)
+  const m_mbti=metier.mbti||'';
+  let mbti_match=0;
+  for(let i=0;i<4;i++){
+    if(mbti_user[i]&&m_mbti[i]&&mbti_user[i]===m_mbti[i]) mbti_match++;
+  }
+  const mbti_pct=mbti_match/4;
+
+  return Math.round((ss_pct*0.7+mbti_pct*0.3)*100);
+}
+
+function lancerMatching(){
+  showScreen('screen-loading');
+
+  const filterSecteur=document.getElementById('filter-secteur').value;
+  const filterNiveau=document.getElementById('filter-niveau').value;
+
+  setTimeout(()=>{
+    let pool=[...ORIENTAI_METIERS];
+
+    // Filtres
+    if(filterSecteur){
+      pool=pool.filter(m=>m.s&&m.s.split(' ; ').map(s=>s.trim()).includes(filterSecteur));
+    }
+    if(filterNiveau){
+      pool=pool.filter(m=>m.n&&m.n.trim()===filterNiveau);
+    }
+
+    // Déduplique par nom (case insensitive)
+    const seen=new Set();
+    pool=pool.filter(m=>{
+      const k=m.m.toLowerCase().trim();
+      if(seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+
+    // Score
+    const scored=pool.map(m=>({
+      ...m,
+      score:computeScore(computedSS,computedMBTI,m)
+    }));
+
+    // Tri décroissant
+    scored.sort((a,b)=>b.score-a.score);
+
+    // Top 30
+    const top30=scored.slice(0,30);
+
+    renderResultats(top30, filterSecteur, filterNiveau);
+    showScreen('screen-resultats');
+  }, 1200);
+}
+
+/* ═══════════════════════════════════════════════
+   RÉSULTATS
+═══════════════════════════════════════════════ */
+function renderResultats(metiers, secteur, niveau){
+  document.getElementById('res-mbti-tag').textContent=computedMBTI;
+
+  const subtitle = metiers.length===0
+    ? 'Aucun métier trouvé avec ces filtres — essayez sans filtre'
+    : `${metiers.length} métier${metiers.length>1?'s':''} compatibles${secteur?' dans '+secteur:''}`;
+  document.getElementById('res-subtitle').textContent=subtitle;
+
+  // Summary chips
+  const summary=document.getElementById('res-summary');
+  summary.innerHTML=`<div class="tag tag-accent">MBTI : ${computedMBTI}</div>`;
+  computedSS.forEach((lv,i)=>{
+    const cols=['tag-accent','tag-accent','tag-gold','tag-green'];
+    summary.innerHTML+=`<div class="tag ${cols[lv]||'tag-accent'}">${SS_LABELS[i]} · ${['','●','●●','●●●'][lv]}</div>`;
+  });
+
+  const grid=document.getElementById('resultats-grid');
+  grid.innerHTML='';
+
+  if(metiers.length===0){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text2);">
+      Aucun métier trouvé. Essayez de modifier les filtres.
+    </div>`;
+    return;
+  }
+
+  metiers.forEach((m,i)=>{
+    const score=m.score;
+    const scoreClass=score>=80?'s-high':score>=60?'s-mid':'s-low';
+
+    const secteurTags=(m.s||'').split(' ; ').slice(0,2).map(s=>
+      `<span class="tag tag-cyan">${s.trim()}</span>`
+    ).join('');
+
+    const niveauTag=m.n?`<span class="tag tag-gold">${m.n}</span>`:'';
+    const mbtiTag=m.mbti?`<span class="tag tag-accent">${m.mbti}</span>`:'';
+
+    const liensHTML=m.l&&m.l.startsWith('http')
+      ?`<a href="${m.l}" target="_blank" rel="noopener" class="btn-onisep">🔗 Fiche ONISEP</a>`
+      :`<span class="no-lien">Pas de lien</span>`;
+
+    const descHTML=m.desc?`<div class="metier-desc">${m.desc}</div>`:'';
+
+    grid.innerHTML+=`
+      <div class="metier-card">
+        <div class="metier-rank">#${i+1}</div>
+        <div class="metier-score ${scoreClass}">${score}%</div>
+        <div class="metier-name">${m.m}</div>
+        <div class="metier-tags">${secteurTags}${niveauTag}${mbtiTag}</div>
+        ${descHTML}
+        <div class="metier-actions">${liensHTML}</div>
+      </div>
+    `;
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   RECOMMENCER
+═══════════════════════════════════════════════ */
+function recommencer(){
+  mode=null; questions=[]; currentQ=0; answers={};
+  computedSS=[]; computedMBTI='';
+  showScreen('screen-accueil');
+}
+
+/* ─── Init stat ─── */
+document.addEventListener('DOMContentLoaded',()=>{
+  if(typeof ORIENTAI_METIERS!=='undefined'){
+    document.getElementById('stat-metiers').textContent=ORIENTAI_METIERS.length.toLocaleString('fr');
+  }
+});
+</script>
+</body>
+</html>

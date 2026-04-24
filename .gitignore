@@ -1,0 +1,36 @@
+# Credentials Google — NE JAMAIS COMMITTER
+google_credentials.json
+orientai_claude/google_credentials.json
+
+# Secrets Streamlit locaux — NE JAMAIS COMMITTER
+.streamlit/secrets.toml
+
+# Données résultats élèves
+data/resultats.csv
+data/enquete.csv
+orientai_claude/data/resultats.csv
+orientai_claude/data/enquete.csv
+
+# Environnement Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Variables d'environnement
+.env
+.env.local
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
