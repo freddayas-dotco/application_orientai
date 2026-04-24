@@ -1,8 +1,4 @@
 import os
-"""
-OrientAI — Application Streamlit complète
-Questionnaire 48 questions + Résultats + Sauvegarde + Dashboard conseiller
-"""
 
 import streamlit as st
 import pandas as pd
