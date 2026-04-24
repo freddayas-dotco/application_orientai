@@ -505,7 +505,7 @@ elif st.session_state.espace in ("eleve", "adulte") and page == "📋 Questionna
             yaxis=dict(title="", autorange="reversed"),
             plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", barmode="overlay",
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="fig_main")
 
         col_leg1, col_leg2, col_leg3 = st.columns(3)
         col_leg1.markdown("🟠 **À développer**")
@@ -1103,7 +1103,7 @@ elif st.session_state.espace == "conseiller" and st.session_state.conseiller_aut
                     xaxis=dict(range=[1, 3], title=""),
                     plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                 )
-                st.plotly_chart(fig_ss, use_container_width=True)
+                st.plotly_chart(fig_ss, use_container_width=True, key="fig_ss")
             else:
                 st.info("Aucune donnée pour ce filtre.")
 
@@ -1129,7 +1129,7 @@ elif st.session_state.espace == "conseiller" and st.session_state.conseiller_aut
                     margin=dict(l=0, r=0, t=10, b=0),
                     plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                 )
-                st.plotly_chart(fig_met, use_container_width=True)
+                st.plotly_chart(fig_met, use_container_width=True, key="fig_met")
 
             st.markdown("---")
 
@@ -1236,7 +1236,7 @@ elif st.session_state.espace == "conseiller" and st.session_state.conseiller_aut
                         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                         barmode="overlay",
                     )
-                    st.plotly_chart(fiche_bars, use_container_width=True)
+                    st.plotly_chart(fiche_bars, use_container_width=True, key="fig_fiche")
 
                     # ── Top 3 métiers ──────────────────────────────────────────
                     st.markdown("#### 💼 Top 3 métiers recommandés")
@@ -1323,7 +1323,7 @@ elif st.session_state.espace == "conseiller" and st.session_state.conseiller_aut
                     margin=dict(t=20, b=20),
                 )
                 fig_q1.update_traces(textposition="outside")
-                st.plotly_chart(fig_q1, use_container_width=True)
+                st.plotly_chart(fig_q1, use_container_width=True, key="fig_q1")
 
             st.markdown("---")
 
@@ -1348,7 +1348,7 @@ elif st.session_state.espace == "conseiller" and st.session_state.conseiller_aut
                         margin=dict(t=20, b=20),
                     )
                     fig_q2.update_traces(textposition="outside")
-                    st.plotly_chart(fig_q2, use_container_width=True)
+                    st.plotly_chart(fig_q2, use_container_width=True, key="fig_q2")
                 with col_q2b:
                     for _, r in counts_q2.iterrows():
                         st.metric(r["Réponse"], f"{r['Pourcentage']}%", f"{int(r['Nombre'])} élève(s)")
@@ -1379,7 +1379,7 @@ elif st.session_state.espace == "conseiller" and st.session_state.conseiller_aut
                     margin=dict(t=20, b=20),
                 )
                 fig_q3.update_traces(textposition="outside")
-                st.plotly_chart(fig_q3, use_container_width=True)
+                st.plotly_chart(fig_q3, use_container_width=True, key="fig_q3")
 
             st.markdown("---")
 
@@ -1408,7 +1408,7 @@ elif st.session_state.espace == "conseiller" and st.session_state.conseiller_aut
                         margin=dict(t=20, b=20),
                     )
                     fig_q4.update_traces(textposition="outside")
-                    st.plotly_chart(fig_q4, use_container_width=True)
+                    st.plotly_chart(fig_q4, use_container_width=True, key="fig_q4")
                 with col_q4b:
                     for _, r in counts_q4.iterrows():
                         st.metric(r["Réponse"], f"{r['Pourcentage']}%", f"{int(r['Nombre'])} élève(s)")
