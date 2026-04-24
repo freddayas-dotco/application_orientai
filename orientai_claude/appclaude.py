@@ -1,3 +1,4 @@
+import os
 """
 OrientAI — Application Streamlit complète
 Questionnaire 48 questions + Résultats + Sauvegarde + Dashboard conseiller
@@ -48,7 +49,7 @@ st.markdown("""
 @st.cache_data
 def load_metiers():
     try:
-        df = pd.read_csv("data/metiers_v52_final.csv", sep=";", encoding="utf-8-sig")
+        df = pd.read_csv(os.path.join(os.path.dirname(__file__), "data/metiers_v52_final.csv"), sep=";", encoding="utf-8-sig")
         return df
     except FileNotFoundError:
         return None
