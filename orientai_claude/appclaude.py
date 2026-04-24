@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 
 from questionnaire import QUESTIONS_ADULTE, QUESTIONS_ELEVE, SS_SECTION_NAMES
 from scoring import compute_profile, compute_matching, SS_LABELS, SS_TEXT, SS_COLS
-from sauvegarde import sauvegarder, charger_resultats, effacer_resultats, sauvegarder_enquete, charger_enquete
+from sauvegarde import sauvegarder, charger_resultats, effacer_resultats, sauvegarder_enquete, charger_enquete, sauvegarder_reponses_brutes
 from rapport_v2 import generer_rapport_v2
 from rapport_pdf import generer_pdf
 from donnees_rapport import MENTION_SALAIRE
@@ -438,6 +438,13 @@ elif st.session_state.espace in ("eleve", "adulte") and page == "📋 Questionna
                             top = compute_matching(profile, df_metiers)
                             st.session_state.profile = profile
                             st.session_state.top_metiers = top
+                        sauvegarder_reponses_brutes(
+                            prenom=st.session_state.get("prenom", ""),
+                            nom=st.session_state.get("nom", ""),
+                            classe=st.session_state.get("classe", ""),
+                            mode=st.session_state.get("mode", "lycee"),
+                            answers=st.session_state.answers,
+                        )
                         st.session_state.etape = "profil"
                     st.rerun()
 
@@ -465,6 +472,13 @@ elif st.session_state.espace in ("eleve", "adulte") and page == "📋 Questionna
                             top = compute_matching(profile, df_metiers)
                             st.session_state.profile = profile
                             st.session_state.top_metiers = top
+                        sauvegarder_reponses_brutes(
+                            prenom=st.session_state.get("prenom", ""),
+                            nom=st.session_state.get("nom", ""),
+                            classe=st.session_state.get("classe", ""),
+                            mode=st.session_state.get("mode", "lycee"),
+                            answers=st.session_state.answers,
+                        )
                         st.session_state.etape = "profil"
                         st.rerun()
             else:

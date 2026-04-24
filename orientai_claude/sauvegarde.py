@@ -46,10 +46,16 @@ def _get_sheet_id():
 # Nom de l'onglet dans le Google Sheet
 SHEET_TAB = "Résultats"
 SHEET_TAB_ENQUETE = "Enquête"
+SHEET_TAB_BRUTES = "Réponses_brutes"
 
 # ── Fallback CSV local ────────────────────────────────────────────────────────
 RESULTATS_FILE = "data/resultats.csv"
 ENQUETE_FILE = "data/enquete.csv"
+REPONSES_BRUTES_FILE = "data/reponses_brutes.csv"
+
+COLONNES_BRUTES = ["date", "prenom", "nom", "classe", "mode"] + [f"Q{i}" for i in range(1, 49)]
+
+_LETTRE = {0: "A", 1: "B", 2: "C", 3: "D"}
 
 COLONNES = [
     "date", "prenom", "nom", "classe", "mode",
@@ -310,3 +316,83 @@ def charger_enquete() -> pd.DataFrame:
             pass
 
     return pd.DataFrame(columns=COLONNES_ENQUETE)
+
+
+# ── Réponses brutes (une ligne par élève, Q1…Q48 = A/B/C/D) ──────────────────
+
+def _get_gsheet_brutes():
+    """Retourne la feuille 'Réponses_brutes' Google Sheets ou None si non disponible."""
+    try:
+        import gspread
+
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive",
+        ]
+        creds = _get_credentials(scopes)
+        if creds is None:
+            return None
+
+        client = gspread.authorize(creds)
+        sh = client.open_by_key(_get_sheet_id())
+
+        try:
+            worksheet = sh.worksheet(SHEET_TAB_BRUTES)
+        except gspread.exceptions.WorksheetNotFound:
+            worksheet = sh.add_worksheet(title=SHEET_TAB_BRUTES, rows=1000, cols=55)
+            worksheet.append_row(COLONNES_BRUTES)
+
+        if worksheet.row_count == 0 or worksheet.cell(1, 1).value != "date":
+            worksheet.insert_row(COLONNES_BRUTES, 1)
+
+        return worksheet
+
+    except Exception as e:
+        print(f"⚠️ Google Sheets (Réponses_brutes) non disponible : {e}")
+        return None
+
+
+def sauvegarder_reponses_brutes(prenom: str, nom: str, classe: str, mode: str,
+                                answers: list):
+    """
+    Sauvegarde les réponses individuelles (A/B/C/D) à chaque question dans
+    l'onglet 'Réponses_brutes' du Google Sheet et dans data/reponses_brutes.csv.
+    Retourne (google_ok, csv_ok).
+    """
+    row = {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "prenom": prenom,
+        "nom": nom,
+        "classe": classe or "",
+        "mode": mode,
+    }
+    for i in range(1, 49):
+        ans = answers[i - 1] if i - 1 < len(answers) else None
+        row[f"Q{i}"] = _LETTRE.get(ans, "") if ans is not None else ""
+
+    row_values = [str(row[col]) for col in COLONNES_BRUTES]
+
+    google_ok = False
+    csv_ok = False
+
+    try:
+        worksheet = _get_gsheet_brutes()
+        if worksheet:
+            worksheet.append_row(row_values)
+            google_ok = True
+    except Exception as e:
+        print(f"⚠️ Erreur Google Sheets (réponses brutes) : {e}")
+
+    try:
+        os.makedirs("data", exist_ok=True)
+        file_exists = os.path.exists(REPONSES_BRUTES_FILE)
+        with open(REPONSES_BRUTES_FILE, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=COLONNES_BRUTES)
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(row)
+        csv_ok = True
+    except Exception as e:
+        print(f"⚠️ Erreur CSV réponses brutes : {e}")
+
+    return google_ok, csv_ok
