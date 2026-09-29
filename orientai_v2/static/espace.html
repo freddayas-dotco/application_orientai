@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mon espace · OrientAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+</head>
+<body data-page="espace">
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✦</span><span>Orient<span class="ai">AI</span></span></a>
+      <a class="header-link" href="/" id="mode-label">Accueil</a>
+    </div>
+  </header>
+
+  <main class="container narrow">
+    <section class="card">
+      <div class="espace-head">
+        <span class="espace-icon" id="espace-icon" aria-hidden="true">🎓</span>
+        <div>
+          <h1 class="espace-title" id="espace-title">Espace Élève</h1>
+          <p class="espace-subtitle" id="espace-subtitle">Collège · Lycée</p>
+        </div>
+      </div>
+      <p class="muted" id="espace-intro"></p>
+      <form id="espace-form" novalidate>
+        <div class="save-grid">
+          <div class="field">
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" autocomplete="given-name" maxlength="100" placeholder="Ex : Marie" required>
+          </div>
+          <div class="field">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" autocomplete="family-name" maxlength="100" placeholder="Ex : Dupont" required>
+          </div>
+          <div class="field">
+            <label for="classe" id="classe-label">Classe <span class="hint">(facultatif)</span></label>
+            <input type="text" id="classe" maxlength="150">
+          </div>
+        </div>
+        <div class="espace-actions">
+          <button type="submit" class="btn btn-primary" value="questionnaire">Passer le questionnaire →</button>
+          <button type="submit" class="btn btn-ghost" value="explorateur">Explorer les métiers</button>
+        </div>
+        <div id="espace-error" hidden></div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">OrientAI v2 · Données métiers issues de l'ONISEP · <a href="https://www.onisep.fr" target="_blank" rel="noopener">onisep.fr</a></footer>
+  <script src="/static/js/app.js?v=7" defer></script>
+</body>
+</html>

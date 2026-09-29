@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · OrientAI</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+</head>
+<body data-page="dashboard">
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✦</span><span>Orient<span class="ai">AI</span></span></a>
+      <button type="button" class="btn btn-ghost" id="btn-logout" style="min-height:36px" hidden>Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="login" class="card login-card" hidden>
+      <div class="eyebrow">Espace conseiller</div>
+      <h1 style="font-size:1.5rem">Connexion</h1>
+      <form id="login-form">
+        <div class="field">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="login-btn">Se connecter</button>
+        <div id="login-error" hidden></div>
+      </form>
+    </section>
+
+    <section id="dash" hidden>
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Espace conseiller</div>
+          <h1 style="font-size:1.7rem">Tableau de bord</h1>
+        </div>
+      </div>
+      <div id="dash-error" hidden></div>
+
+      <div class="toolbar">
+        <div class="field"><label for="f-search">Rechercher</label><input type="search" id="f-search" placeholder="Nom, classe, métier…"></div>
+        <div class="field"><label for="f-classe">Classe</label><select id="f-classe"></select></div>
+        <div class="field"><label for="f-mode">Public</label>
+          <select id="f-mode"><option value="">Tous</option><option value="eleve">Élèves</option><option value="adulte">Adultes</option></select>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="kpi-label">Profils</div><div class="kpi-value" id="kpi-total">0</div></div>
+        <div class="kpi"><div class="kpi-label">Élèves</div><div class="kpi-value" id="kpi-eleves">0</div></div>
+        <div class="kpi"><div class="kpi-label">Adultes</div><div class="kpi-value" id="kpi-adultes">0</div></div>
+        <div class="kpi"><div class="kpi-label">Classes</div><div class="kpi-value" id="kpi-classes">0</div></div>
+      </div>
+
+      <p class="card empty" id="dash-empty" hidden>Aucun résultat pour cette sélection.</p>
+
+      <div class="charts">
+        <div class="card chart-card">
+          <h3>Soft skills du groupe</h3>
+          <p class="muted">Score moyen par soft skill (1 = à développer, 3 = très développée)</p>
+          <div class="legend">
+            <span><i style="background:#E53E3E"></i>&lt; 1.5</span>
+            <span><i style="background:#DD6B20"></i>1.5 – 2.5</span>
+            <span><i style="background:#38A169"></i>&gt; 2.5</span>
+          </div>
+          <ul class="gauges" id="skills-gauges"></ul>
+        </div>
+        <div class="card chart-card">
+          <h3>Métiers les plus recommandés</h3>
+          <p class="muted">Nombre de profils ayant ce métier dans leur top 3</p>
+          <div class="chart-box" style="margin-top:28px"><canvas id="chart-jobs" role="img" aria-label="Métiers les plus fréquents dans les tops 3"></canvas></div>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-head"><h2>Résultats</h2><span class="muted small">Soft skills : 1 = à développer, 3 = très développée</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th><th>Nom</th><th>Classe</th><th>Public</th><th>Métier n°1</th><th>Score</th>
+                <th title="Communication">Com.</th><th title="Esprit critique">Esp. crit.</th><th title="Éthique">Éthique</th>
+                <th title="Intelligence émotionnelle">Int. émo.</th><th title="Intelligence sociale">Int. soc.</th>
+                <th title="Management de projet">Projet</th><th title="Management d'équipe">Équipe</th><th title="Organisation">Orga.</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">OrientAI v2 · Données métiers issues de l'ONISEP · <a href="https://www.onisep.fr" target="_blank" rel="noopener">onisep.fr</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="/static/js/app.js?v=7" defer></script>
+</body>
+</html>

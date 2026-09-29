@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questionnaire · OrientAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+</head>
+<body data-page="questionnaire">
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✦</span><span>Orient<span class="ai">AI</span></span></a>
+      <span class="header-link" id="mode-label"></span>
+    </div>
+  </header>
+
+  <main class="container narrow">
+    <!-- Étape 1 : identité -->
+    <section id="intro" class="card">
+      <div class="eyebrow">Avant de commencer</div>
+      <h1 style="font-size:1.6rem">Quelques infos sur toi</h1>
+      <p class="muted">Facultatif : elles servent seulement à enregistrer tes résultats pour ton conseiller. Le questionnaire compte 48 questions, sans bonne ni mauvaise réponse.</p>
+      <form id="intro-form" novalidate>
+        <div class="field">
+          <label for="prenom">Prénom <span class="hint">(facultatif)</span></label>
+          <input type="text" id="prenom" autocomplete="given-name" maxlength="100" placeholder="Ex : Marie">
+        </div>
+        <div class="field">
+          <label for="nom">Nom <span class="hint">(facultatif)</span></label>
+          <input type="text" id="nom" autocomplete="family-name" maxlength="100" placeholder="Ex : Dupont">
+        </div>
+        <div class="field">
+          <label for="classe" id="classe-label">Classe <span class="hint">(facultatif)</span></label>
+          <input type="text" id="classe" maxlength="150">
+        </div>
+        <p id="resume-hint" class="alert alert-info" hidden>Tu avais commencé ce questionnaire : tu reprendras là où tu t'étais arrêté·e.</p>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px">Commencer le questionnaire →</button>
+        <div id="intro-error" hidden></div>
+      </form>
+    </section>
+
+    <!-- Étape 2 : questions -->
+    <section id="quiz" hidden>
+      <div class="progress-wrap">
+        <div class="progress-meta"><strong id="q-count"></strong><span id="q-section"></span></div>
+        <div class="progress" id="progress" role="progressbar" aria-label="Progression" aria-valuemin="0" aria-valuemax="48" aria-valuenow="0">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="card question-card">
+        <p class="question-text" id="question-text" tabindex="-1"></p>
+        <div class="options" id="options" role="radiogroup" aria-labelledby="question-text"></div>
+      </div>
+
+      <div class="quiz-nav">
+        <button type="button" class="btn btn-ghost" id="btn-prev">← Précédent</button>
+        <button type="button" class="btn btn-primary" id="btn-next">Suivant →</button>
+      </div>
+      <div id="quiz-error" hidden></div>
+      <p class="kbd-hint">Astuce : touches <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> pour répondre, <kbd>←</kbd> <kbd>→</kbd> pour naviguer.</p>
+    </section>
+
+    <section id="loading" class="loading" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Analyse du profil en cours…</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">OrientAI v2 · Données métiers issues de l'ONISEP · <a href="https://www.onisep.fr" target="_blank" rel="noopener">onisep.fr</a></footer>
+
+  <script src="/static/js/app.js?v=7" defer></script>
+</body>
+</html>

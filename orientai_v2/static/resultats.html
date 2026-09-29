@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Résultats · OrientAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+</head>
+<body data-page="resultats">
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✦</span><span>Orient<span class="ai">AI</span></span></a>
+      <a class="header-link" href="/">Accueil</a>
+    </div>
+  </header>
+
+  <main class="container narrow">
+    <section id="no-result" class="card empty" hidden>
+      <h2>Aucun résultat pour l'instant</h2>
+      <p>Réponds d'abord au questionnaire pour découvrir les métiers qui te correspondent.</p>
+      <a class="btn btn-primary" href="/">Commencer</a>
+    </section>
+
+    <div id="content" hidden>
+      <section>
+        <div class="eyebrow">Profil soft skills</div>
+        <h1 id="title" style="font-size:1.7rem"></h1>
+        <div class="card" style="margin-top:14px">
+          <div class="skills" id="skills"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Métiers compatibles</h2>
+          <span class="muted small" id="jobs-count"></span>
+        </div>
+        <div class="filters">
+          <div class="field">
+            <label for="filtre-secteur">Secteur d'activité</label>
+            <select id="filtre-secteur"><option value="">Tous les secteurs</option></select>
+          </div>
+          <div class="field">
+            <label for="filtre-niveau">Niveau d'études</label>
+            <select id="filtre-niveau"><option value="">Tous les niveaux</option></select>
+          </div>
+        </div>
+        <ol class="jobs" id="jobs"></ol>
+        <div class="card empty" id="jobs-empty" hidden>
+          <p>Aucun métier ne correspond à ces filtres.</p>
+          <button type="button" class="btn btn-ghost" id="reset-filtres">Réinitialiser les filtres</button>
+        </div>
+        <p class="muted small" style="margin-top:12px">Le score mesure l'écart entre le profil et le niveau requis par le métier sur chacune des 8 soft skills. Touchez un métier pour voir son descriptif.</p>
+      </section>
+
+      <section class="section card">
+        <h2>Enregistrer les résultats</h2>
+        <p class="muted small">Le conseiller pourra les retrouver dans son tableau de bord.</p>
+        <form id="save-form" novalidate>
+          <div class="save-grid">
+            <div class="field"><label for="save-prenom">Prénom</label><input type="text" id="save-prenom" autocomplete="given-name" maxlength="100" required></div>
+            <div class="field"><label for="save-nom">Nom</label><input type="text" id="save-nom" autocomplete="family-name" maxlength="100" required></div>
+            <div class="field"><label for="save-classe" id="save-classe-label">Classe <span class="hint">(facultatif)</span></label><input type="text" id="save-classe" maxlength="150"></div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-save">Enregistrer mes résultats</button>
+          <div id="save-msg" hidden></div>
+        </form>
+      </section>
+
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px">
+        <button type="button" class="btn btn-primary" id="btn-pdf">Télécharger mon profil PDF</button>
+        <button type="button" class="btn btn-ghost" id="btn-restart">Refaire le questionnaire</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">OrientAI v2 · Données métiers issues de l'ONISEP · <a href="https://www.onisep.fr" target="_blank" rel="noopener">onisep.fr</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" defer></script>
+  <script src="/static/js/app.js?v=7" defer></script>
+</body>
+</html>

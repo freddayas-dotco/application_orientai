@@ -34,3 +34,7 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# OrientAI v2 — credentials et données élèves locales
+orientai_v2/google_credentials.json
+orientai_v2/data/

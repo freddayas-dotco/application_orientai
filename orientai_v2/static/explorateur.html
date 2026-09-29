@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explorateur de métiers · OrientAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+</head>
+<body data-page="explorateur">
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✦</span><span>Orient<span class="ai">AI</span></span></a>
+      <a class="header-link" href="/" id="back-link">Accueil</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <div class="eyebrow">Explorateur de métiers</div>
+      <h1 style="font-size:1.7rem" id="title">Explore les métiers</h1>
+      <p class="muted">Recherche parmi plus de 1 100 métiers, par nom, secteur d'activité, niveau d'études ou centre d'intérêt.</p>
+    </section>
+
+    <form class="toolbar toolbar-4" id="search-form" role="search" onsubmit="return false">
+      <div class="field">
+        <label for="q">Nom du métier</label>
+        <input type="search" id="q" maxlength="100" placeholder="Ex : infirmier, développeur, architecte…" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="filtre-secteur">Secteur d'activité</label>
+        <select id="filtre-secteur"><option value="">Tous les secteurs</option></select>
+      </div>
+      <div class="field">
+        <label for="filtre-niveau">Niveau d'études</label>
+        <select id="filtre-niveau"><option value="">Tous les niveaux</option></select>
+      </div>
+      <div class="field">
+        <label for="filtre-interet">Centre d'intérêt</label>
+        <select id="filtre-interet">
+          <option value="">Tous les centres d'intérêt</option>
+          <option>Communiquer / Informer</option>
+          <option>Aider / Accompagner</option>
+          <option>Concevoir / Innover</option>
+          <option>Créer / Fabriquer</option>
+          <option>Organiser / Gérer</option>
+          <option>Analyser / Rechercher</option>
+          <option>Enseigner / Former</option>
+          <option>Vendre / Négocier</option>
+          <option>Protéger / Sécuriser</option>
+          <option>Construire / Réparer</option>
+        </select>
+      </div>
+    </form>
+
+    <div class="section-head">
+      <span class="muted small" id="results-count" aria-live="polite"></span>
+    </div>
+    <div id="search-error" hidden></div>
+    <div class="metier-grid" id="results"></div>
+    <div class="card empty" id="results-empty" hidden>
+      <p>Aucun métier ne correspond à cette recherche.</p>
+      <button type="button" class="btn btn-ghost" id="reset-filtres">Réinitialiser la recherche</button>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button type="button" class="btn btn-ghost" id="btn-more" hidden>Afficher plus de métiers</button>
+    </div>
+  </main>
+
+  <footer class="site-footer">OrientAI v2 · Données métiers issues de l'ONISEP · <a href="https://www.onisep.fr" target="_blank" rel="noopener">onisep.fr</a></footer>
+  <script src="/static/js/app.js?v=7" defer></script>
+</body>
+</html>
