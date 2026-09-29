@@ -238,12 +238,12 @@ QUESTIONS_ADULTE = [
         "n": 20, "ss": 3, "mbti": "TF", "ml": "F",
         "q": "Si on vous demande de citer vos qualités et vos défauts, y arrivez-vous facilement ?",
         "opts": [
-            "Non, je n'y arrive jamais.",
-            "En général, j'ai besoin qu'on m'aide.",
-            "Plutôt oui, j'y arrive.",
             "Oui, très facilement et précisément.",
+            "Plutôt oui, j'y arrive.",
+            "En général, j'ai besoin qu'on m'aide.",
+            "Non, je n'y arrive jamais.",
         ],
-        "sc": [0, 0, 2, 1], "mp": [0, 0, 2, 1],
+        "sc": [2, 1, 0, 0], "mp": [1, 2, 0, 0],
     },
     {
         "n": 21, "ss": 3, "mbti": "EI", "ml": "E",
@@ -418,12 +418,12 @@ QUESTIONS_ADULTE = [
         "n": 36, "ss": 5, "mbti": "JP", "ml": "P",
         "q": "En plein jeu de société, toutes les règles changent d'un coup. Comment réagissez-vous ?",
         "opts": [
-            "J'arrête de jouer, on ne change pas les règles en cours de partie.",
-            "Je suis perturbé et énervé, je ne sais pas quoi faire.",
-            "Je lis les nouvelles règles et essaie de gagner quand même.",
             "Je continue à jouer, ça pourra être amusant.",
+            "Je lis les nouvelles règles et essaie de gagner quand même.",
+            "Je suis perturbé et énervé, je ne sais pas quoi faire.",
+            "J'arrête de jouer, on ne change pas les règles en cours de partie.",
         ],
-        "sc": [0, 0, 2, 1], "mp": [0, 0, 2, 1],
+        "sc": [2, 1, 0, 0], "mp": [1, 2, 0, 0],
     },
 
     # ── MGMT D'ÉQUIPE (6 questions) ───────────────────────────────────────────
@@ -464,12 +464,12 @@ QUESTIONS_ADULTE = [
         "n": 40, "ss": 6, "mbti": "JP", "ml": "P",
         "q": "Face à un travail qui nécessite une compétence que vous n'avez pas, allez-vous tenter de le réaliser quand même ?",
         "opts": [
-            "Non, le travail sera mal réalisé.",
-            "Non, sauf si un expert peut m'aider.",
             "Oui, je vais m'autoformer grâce à internet.",
             "Oui, je m'adapterai au fur et à mesure.",
+            "Non, sauf si un expert peut m'aider.",
+            "Non, le travail sera mal réalisé.",
         ],
-        "sc": [0, 0, 2, 1], "mp": [0, 0, 2, 1],
+        "sc": [2, 1, 0, 0], "mp": [2, 1, 0, 0],
     },
     {
         "n": 41, "ss": 6, "mbti": "EI", "ml": "E",
@@ -801,12 +801,12 @@ QUESTIONS_ELEVE = [
         "n": 20, "ss": 3, "mbti": "TF", "ml": "F",
         "q": "Si on te demande de citer tes qualités et tes défauts, tu y arrives facilement ?",
         "opts": [
-            "Non, je n'y arrive jamais.",
-            "En général, j'ai besoin qu'on m'aide.",
-            "Plutôt oui, j'y arrive.",
             "Oui, très facilement et précisément.",
+            "Plutôt oui, j'y arrive.",
+            "En général, j'ai besoin qu'on m'aide.",
+            "Non, je n'y arrive jamais.",
         ],
-        "sc": [0, 0, 2, 1], "mp": [0, 0, 2, 1],
+        "sc": [2, 1, 0, 0], "mp": [1, 2, 0, 0],
     },
     {
         "n": 21, "ss": 3, "mbti": "EI", "ml": "E",
@@ -981,12 +981,12 @@ QUESTIONS_ELEVE = [
         "n": 36, "ss": 5, "mbti": "JP", "ml": "P",
         "q": "En plein jeu de société, toutes les règles changent d'un coup. Comment tu réagis ?",
         "opts": [
-            "J'arrête de jouer, on ne change pas les règles en cours de partie.",
-            "Je suis perturbé et énervé, je ne sais pas quoi faire.",
-            "Je lis les nouvelles règles et j'essaie de gagner quand même.",
             "Je continue à jouer, ça peut être amusant.",
+            "Je lis les nouvelles règles et j'essaie de gagner quand même.",
+            "Je suis perturbé et énervé, je ne sais pas quoi faire.",
+            "J'arrête de jouer, on ne change pas les règles en cours de partie.",
         ],
-        "sc": [0, 0, 2, 1], "mp": [0, 0, 2, 1],
+        "sc": [2, 1, 0, 0], "mp": [1, 2, 0, 0],
     },
 
     # ── MGMT D'ÉQUIPE (6 questions) ───────────────────────────────────────────
@@ -1027,12 +1027,12 @@ QUESTIONS_ELEVE = [
         "n": 40, "ss": 6, "mbti": "JP", "ml": "P",
         "q": "Face à un devoir qui nécessite une compétence que tu n'as pas encore, vas-tu quand même tenter de le faire ?",
         "opts": [
-            "Non, le travail sera mal réalisé.",
-            "Non, sauf si quelqu'un de compétent peut m'aider.",
             "Oui, je vais m'autoformer grâce à internet.",
             "Oui, je m'adapterai au fur et à mesure.",
+            "Non, sauf si quelqu'un de compétent peut m'aider.",
+            "Non, le travail sera mal réalisé.",
         ],
-        "sc": [0, 0, 2, 1], "mp": [0, 0, 2, 1],
+        "sc": [2, 1, 0, 0], "mp": [2, 1, 0, 0],
     },
     {
         "n": 41, "ss": 6, "mbti": "EI", "ml": "E",
