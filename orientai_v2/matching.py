@@ -83,6 +83,10 @@ def compute_matching(profile: dict, df_metiers, limit: int | None = 30) -> list[
             "descriptif": str(row.get("Descriptif", "")),
             "diplomes": diplomes,
             "score": score,
+            # Niveau requis par le métier (« Peu nécessaire » / « Nécessaire » / « Absolument nécessaire »)
+            "soft_skills": {
+                col: row.get(col) if row.get(col) in SS_FROM_TEXT else "" for col in SS_COLS
+            },
         })
 
     # Tri + déduplication + limite

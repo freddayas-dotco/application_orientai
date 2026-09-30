@@ -292,6 +292,26 @@ async function initResultats() {
       filtres.niveaux_etudes.map((n) => `<option>${escapeHtml(n)}</option>`).join(""));
   } catch { /* filtres indisponibles : la liste reste utilisable */ }
 
+  // Niveau requis par métier sur les 8 soft skills (gris / orange clair / orange foncé)
+  const JOB_SS_CLASS = { "Peu nécessaire": "ss-low", "Nécessaire": "ss-mid", "Absolument nécessaire": "ss-high" };
+  function jobSkills(softSkills) {
+    if (!softSkills) return "";
+    return `
+      <h4 class="job-ss-title">Soft skills requises pour ce métier</h4>
+      <ul class="job-ss">
+        ${Object.entries(softSkills).map(([nom, niveau]) => `
+          <li><span>${escapeHtml(nom)}</span><span class="job-ss-level ${JOB_SS_CLASS[niveau] || ""}">${escapeHtml(niveau || "–")}</span></li>`).join("")}
+      </ul>`;
+  }
+
+  // Résultats calculés avant l'ajout des soft skills par métier : on les recalcule
+  if (result.metiers.length && !result.metiers[0].soft_skills) {
+    try {
+      Object.assign(result, await api("/api/resultats", payload));
+      store.set(RESULT_KEY, { ...saved, result });
+    } catch { /* on garde l'affichage sans le détail des soft skills */ }
+  }
+
   const list = $("#jobs");
   function renderJobs() {
     const secteur = secteurSel.value;
@@ -321,8 +341,10 @@ async function initResultats() {
               <strong>${m.score}%</strong>
               <div class="bar"><i style="width:${m.score}%"></i></div>
             </div>
+            <span class="job-chevron" aria-hidden="true">▼</span>
           </summary>
           <div class="job-details">
+            ${jobSkills(m.soft_skills)}
             ${m.descriptif && m.descriptif !== "nan" ? `<p>${escapeHtml(m.descriptif)}</p>` : ""}
             <dl>
               ${m.diplomes && m.diplomes !== "nan" ? `<dt>Formation</dt><dd>${escapeHtml(m.diplomes)}</dd>` : ""}

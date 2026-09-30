@@ -208,7 +208,7 @@ kbd { font-family: inherit; font-size: .75rem; border: 1px solid var(--line); bo
 
 .jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .job { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
-.job details > summary { list-style: none; cursor: pointer; padding: 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+.job details > summary { list-style: none; cursor: pointer; padding: 16px; display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; }
 .job details > summary::-webkit-details-marker { display: none; }
 .job-rank { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); display: grid; place-items: center; font-size: .82rem; font-weight: 700; color: var(--muted); }
 .job:nth-child(-n+3) .job-rank { background: var(--coral-soft); border-color: transparent; color: var(--coral-deep); }
@@ -225,6 +225,16 @@ kbd { font-family: inherit; font-size: .75rem; border: 1px solid var(--line); bo
 .job-details dt { font-weight: 600; color: var(--ink); }
 .job-details dd { margin: 0; }
 .job details[open] .job-title { color: var(--coral-dark); }
+.job-chevron { font-size: .75rem; color: var(--muted); transition: transform .2s; }
+.job details[open] .job-chevron { transform: rotate(180deg); color: var(--coral-dark); }
+.job-ss-title { margin: 4px 0 8px; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--ink); }
+.job-ss { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 6px; grid-template-columns: 1fr; }
+.job-ss li { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--ink); }
+.job-ss-level { flex-shrink: 0; font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; background: var(--line); color: var(--muted); }
+.job-ss-level.ss-low { background: #EDEFF2; color: #5B6470; }
+.job-ss-level.ss-mid { background: #FDE8D7; color: #9C4A0F; }
+.job-ss-level.ss-high { background: #DD6B20; color: #fff; }
+@media (min-width: 640px) { .job-ss { grid-template-columns: 1fr 1fr; column-gap: 24px; } }
 
 .empty { text-align: center; padding: 28px 16px; color: var(--muted); }
 
