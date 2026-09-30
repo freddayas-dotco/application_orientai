@@ -62,14 +62,21 @@ def _get_sheet_id():
 SHEET_TAB = "Résultats"
 SHEET_TAB_ENQUETE = "Enquête"
 SHEET_TAB_BRUTES = "Réponses_brutes"
+SHEET_TAB_VALIDATION = "Validation"
 
 # ── Fallback CSV local ────────────────────────────────────────────────────────
 DATA_DIR = os.path.join(_BASE_DIR, "data")
 RESULTATS_FILE = os.path.join(DATA_DIR, "resultats.csv")
 ENQUETE_FILE = os.path.join(DATA_DIR, "enquete.csv")
 REPONSES_BRUTES_FILE = os.path.join(DATA_DIR, "reponses_brutes.csv")
+VALIDATION_FILE = os.path.join(DATA_DIR, "validation.csv")
 
 COLONNES_BRUTES = ["date", "prenom", "nom", "classe", "mode"] + [f"Q{i}" for i in range(1, 49)]
+
+COLONNES_VALIDATION = [
+    "date", "prenom", "nom", "classe", "mode",
+    "soft_skill", "sous_competence", "texte_analyse", "validation",
+]
 
 _LETTRE = {0: "A", 1: "B", 2: "C", 3: "D"}
 
@@ -410,5 +417,82 @@ def sauvegarder_reponses_brutes(prenom: str, nom: str, classe: str, mode: str,
         csv_ok = True
     except Exception as e:
         print(f"⚠️ Erreur CSV réponses brutes : {e}")
+
+    return google_ok, csv_ok
+
+
+# ── Validation de l'analyse (« Je me reconnais ? », une ligne par sous-compétence) ──
+
+def _get_gsheet_validation():
+    """Retourne la feuille 'Validation' Google Sheets ou None si non disponible."""
+    try:
+        import gspread
+
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive",
+        ]
+        creds = _get_credentials(scopes)
+        if creds is None:
+            return None
+
+        client = gspread.authorize(creds)
+        sh = client.open_by_key(_get_sheet_id())
+
+        try:
+            worksheet = sh.worksheet(SHEET_TAB_VALIDATION)
+        except gspread.exceptions.WorksheetNotFound:
+            worksheet = sh.add_worksheet(title=SHEET_TAB_VALIDATION, rows=1000, cols=len(COLONNES_VALIDATION))
+            worksheet.append_row(COLONNES_VALIDATION)
+
+        if worksheet.row_count == 0 or worksheet.cell(1, 1).value != "date":
+            worksheet.insert_row(COLONNES_VALIDATION, 1)
+
+        return worksheet
+
+    except Exception as e:
+        print(f"⚠️ Google Sheets (Validation) non disponible : {e}")
+        return None
+
+
+def sauvegarder_validation(prenom: str, nom: str, classe: str, mode: str, lignes: list):
+    """
+    Sauvegarde la validation de l'analyse détaillée dans l'onglet 'Validation'
+    du Google Sheet et dans data/validation.csv.
+    lignes : dicts {soft_skill, sous_competence, texte_analyse, validation (Oui/Non/Non répondu)}.
+    Retourne (google_ok, csv_ok).
+    """
+    commun = {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "prenom": prenom,
+        "nom": nom,
+        "classe": classe or "",
+        "mode": mode,
+    }
+    rows = [{**commun, **ligne} for ligne in lignes]
+
+    google_ok = False
+    csv_ok = False
+
+    try:
+        worksheet = _get_gsheet_validation()
+        if worksheet:
+            # Un seul appel pour les 48 lignes (quota d'écriture de l'API Google)
+            worksheet.append_rows([[str(r[col]) for col in COLONNES_VALIDATION] for r in rows])
+            google_ok = True
+    except Exception as e:
+        print(f"⚠️ Erreur Google Sheets (validation) : {e}")
+
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        file_exists = os.path.exists(VALIDATION_FILE)
+        with open(VALIDATION_FILE, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=COLONNES_VALIDATION)
+            if not file_exists:
+                writer.writeheader()
+            writer.writerows(rows)
+        csv_ok = True
+    except Exception as e:
+        print(f"⚠️ Erreur CSV validation : {e}")
 
     return google_ok, csv_ok

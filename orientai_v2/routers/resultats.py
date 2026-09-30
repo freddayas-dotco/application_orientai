@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field, field_validator
 from donnees_rapport import MAPPING_QUESTIONS, SS_RAPPORT_NOMS
 from matching import NIVEAUX_ETUDES, compute_matching, niveau_etudes, split_secteurs
 from routers.questionnaire import get_questions
-from sauvegarde import sauvegarder, sauvegarder_reponses_brutes
+from sauvegarde import sauvegarder, sauvegarder_reponses_brutes, sauvegarder_validation
 from scoring import SS_LABELS, SS_TEXT, compute_profile
 
 router = APIRouter(prefix="/api", tags=["resultats"])
@@ -50,8 +50,8 @@ class ReponsesIn(BaseModel):
 def _analyse(answers: list[int], questions: list[dict]) -> list[dict]:
     """Pour chaque soft skill : ce que révèle chaque réponse (textes du rapport v5.2)."""
     analyse = [{"nom": SS_RAPPORT_NOMS[i], "items": []} for i in range(8)]
-    for (sous_comp, _ss_nom, textes), q, ans in zip(MAPPING_QUESTIONS, questions, answers):
-        analyse[q["ss"]]["items"].append({"sous_competence": sous_comp, "texte": textes["ABCD"[ans]]})
+    for idx, ((sous_comp, _ss_nom, textes), q, ans) in enumerate(zip(MAPPING_QUESTIONS, questions, answers)):
+        analyse[q["ss"]]["items"].append({"q": idx, "sous_competence": sous_comp, "texte": textes["ABCD"[ans]]})
     return analyse
 
 
@@ -95,6 +95,43 @@ def sauvegarde(data: ReponsesIn):
         "google_ok": google_ok and brutes_google_ok,
         "csv_ok": csv_ok and brutes_csv_ok,
     }
+
+
+class ValidationIn(ReponsesIn):
+    # Index de la question (0-47) → « Oui » / « Non » ; les autres sont « Non répondu »
+    validations: dict[int, Literal["Oui", "Non"]] = Field(default_factory=dict)
+
+    @field_validator("validations")
+    @classmethod
+    def check_validations(cls, v):
+        if any(not 0 <= q < 48 for q in v):
+            raise ValueError("Numéro de question invalide.")
+        return v
+
+
+@router.post("/validation")
+def validation(data: ValidationIn):
+    """« Je me reconnais ? » : une ligne par sous-compétence dans l'onglet Validation."""
+    if not data.prenom.strip() or not data.nom.strip():
+        raise HTTPException(422, "Le prénom et le nom sont requis pour sauvegarder.")
+    if any(a is None for a in data.answers):
+        raise HTTPException(422, "Toutes les questions doivent avoir une réponse.")
+    # Textes recalculés côté serveur à partir des réponses
+    lignes = [
+        {
+            "soft_skill": skill["nom"],
+            "sous_competence": item["sous_competence"],
+            "texte_analyse": item["texte"],
+            "validation": data.validations.get(item["q"], "Non répondu"),
+        }
+        for skill in _analyse(data.answers, get_questions(data.mode))
+        for item in skill["items"]
+    ]
+    google_ok, csv_ok = sauvegarder_validation(
+        data.prenom.strip(), data.nom.strip(), data.classe.strip(), MODE_SAUVEGARDE[data.mode], lignes)
+    if not (google_ok or csv_ok):
+        raise HTTPException(500, "La sauvegarde a échoué.")
+    return {"google_ok": google_ok, "csv_ok": csv_ok}
 
 
 @router.get("/metiers/filtres")

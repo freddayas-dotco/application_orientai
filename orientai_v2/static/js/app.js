@@ -304,12 +304,109 @@ async function initResultats() {
       </ul>`;
   }
 
-  // Résultats calculés avant l'ajout des soft skills par métier : on les recalcule
-  if (result.metiers.length && !result.metiers[0].soft_skills) {
+  // Résultats calculés avant l'ajout de l'analyse (avec n° de question) / des soft skills par métier : on les recalcule
+  if (!result.analyse || result.analyse[0].items[0]?.q === undefined
+      || (result.metiers.length && !result.metiers[0].soft_skills)) {
     try {
       Object.assign(result, await api("/api/resultats", payload));
       store.set(RESULT_KEY, { ...saved, result });
-    } catch { /* on garde l'affichage sans le détail des soft skills */ }
+    } catch { /* on garde l'affichage sans ces détails */ }
+  }
+
+  // « Je me reconnais ? » : n° de question → "Oui" / "Non" (gardé aussi pour la session)
+  const validations = saved.validations || {};
+  const persistValidations = () => store.set(RESULT_KEY, { ...store.get(RESULT_KEY), validations });
+
+  // Analyse détaillée : sous-compétences et texte correspondant à chaque réponse
+  if (result.analyse) {
+    if (payload.mode === "adulte") {
+      $("#analyse-title").textContent = "Analyse détaillée de votre profil";
+      $("#analyse-hint").textContent = "Pour chaque sous-compétence, indiquez si vous vous reconnaissez dans ce que révèlent vos réponses.";
+    }
+    $("#analyse").innerHTML = result.analyse.map((skill, i) => `
+      <details class="rapport-block"${i === 0 ? " open" : ""}>
+        <summary class="rapport-head">
+          <span>${escapeHtml(skill.nom)}</span>
+          <span class="rapport-right">
+            <span class="rapport-level">${LEVELS[result.profil[i].niveau]}</span>
+            <span class="rapport-chevron" aria-hidden="true">▼</span>
+          </span>
+        </summary>
+        <table class="rapport-table">
+          <thead><tr><th>Sous-compétence</th><th>Ce que vos réponses révèlent</th><th>Je me reconnais ?</th></tr></thead>
+          <tbody>${skill.items.map((it) => {
+            const choix = validations[it.q] || "";
+            return `
+            <tr data-q="${it.q}" data-choice="${choix}">
+              <td>${escapeHtml(it.sous_competence)}</td>
+              <td>${escapeHtml(it.texte)}</td>
+              <td>
+                <div class="reco" role="group" aria-label="Je me reconnais : ${escapeHtml(it.sous_competence)}">
+                  <button type="button" class="reco-btn reco-oui" data-v="Oui" aria-pressed="${choix === "Oui"}">✓ Oui</button>
+                  <button type="button" class="reco-btn reco-non" data-v="Non" aria-pressed="${choix === "Non"}">✗ Non</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join("")}
+          </tbody>
+        </table>
+      </details>`).join("");
+    $("#analyse-section").hidden = false;
+
+    const saveAnalyseBtn = $("#btn-save-analyse");
+    const analyseMsg = $("#analyse-msg");
+
+    // Clic sur Oui / Non : on recolore la ligne ; recliquer le bouton choisi annule le choix
+    $("#analyse").addEventListener("click", (ev) => {
+      const btn = ev.target.closest(".reco-btn");
+      if (!btn) return;
+      const row = btn.closest("tr");
+      const q = row.dataset.q;
+      const choix = validations[q] === btn.dataset.v ? "" : btn.dataset.v;
+      if (choix) validations[q] = choix;
+      else delete validations[q];
+      row.dataset.choice = choix;
+      row.querySelectorAll(".reco-btn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === choix)));
+      persistValidations();
+      saveAnalyseBtn.disabled = false;
+      saveAnalyseBtn.textContent = "Sauvegarder mon analyse";
+    });
+
+    saveAnalyseBtn.addEventListener("click", async () => {
+      const prenomSave = $("#save-prenom").value.trim() || payload.prenom || "";
+      const nomSave = $("#save-nom").value.trim() || payload.nom || "";
+      if (!prenomSave || !nomSave) {
+        showAlert(analyseMsg, "Indique ton prénom et ton nom dans « Enregistrer les résultats » pour sauvegarder ton analyse.");
+        return;
+      }
+      saveAnalyseBtn.disabled = true;
+      saveAnalyseBtn.textContent = "Sauvegarde…";
+      try {
+        const res = await api("/api/validation", {
+          ...payload,
+          prenom: prenomSave,
+          nom: nomSave,
+          classe: $("#save-classe").value.trim() || payload.classe || "",
+          validations,
+        });
+        const nb = Object.keys(validations).length;
+        showAlert(analyseMsg, `Analyse sauvegardée (${nb} sous-compétence${nb > 1 ? "s" : ""} sur 48 validée${nb > 1 ? "s" : ""})`
+          + (res.google_ok ? "." : " localement (Google Sheets indisponible)."), "success");
+        saveAnalyseBtn.textContent = "Analyse sauvegardée ✓";
+      } catch (e) {
+        saveAnalyseBtn.disabled = false;
+        saveAnalyseBtn.textContent = "Sauvegarder mon analyse";
+        showAlert(analyseMsg, e.message);
+      }
+    });
+
+    const btnAnalyse = $("#btn-analyse");
+    btnAnalyse.hidden = false;
+    btnAnalyse.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const reduire = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      $("#analyse-section").scrollIntoView({ behavior: reduire ? "auto" : "smooth", block: "start" });
+    });
   }
 
   const list = $("#jobs");
@@ -394,7 +491,7 @@ async function initResultats() {
     saveBtn.textContent = "Enregistrement…";
     try {
       const res = await api("/api/sauvegarde", body);
-      store.set(RESULT_KEY, { ...saved, payload: body, saved: true });
+      store.set(RESULT_KEY, { ...store.get(RESULT_KEY), payload: body, saved: true });
       showAlert(saveMsg, res.google_ok
         ? "Résultats enregistrés. Ton conseiller pourra les consulter."
         : "Résultats enregistrés localement (Google Sheets indisponible).", "success");
@@ -422,6 +519,7 @@ async function initResultats() {
         mode: payload.mode,
         result,
         levels: LEVELS,
+        validations,
       });
     } catch (e) {
       alert(`Le PDF n'a pas pu être généré : ${e.message}`);
@@ -439,6 +537,7 @@ async function initResultats() {
 
 // ── Rapport PDF (jsPDF + html2canvas, généré dans le navigateur) ────────────
 const PDF_LEVEL_COLORS = { 1: "#E53E3E", 2: "#DD6B20", 3: "#38A169" };
+const PDF_VALIDATION_COLORS = { "Oui": "#38A169", "Non": "#E53E3E", "Non répondu": "#9CA3AF" };
 const PDF_PAGE_H = 1123;          // hauteur A4 en px à 96 dpi (largeur 794)
 const PDF_BOTTOM_RESERVE = 90;    // marge basse laissée libre pour le pied de page
 // Styles en ligne des cellules : html2canvas les applique de façon fiable, le texte reste dans sa cellule
@@ -486,7 +585,7 @@ function radarImage(host, profil) {
   return url;
 }
 
-async function exportRapportPdf({ prenom, nom, mode, result, levels }) {
+async function exportRapportPdf({ prenom, nom, mode, result, levels, validations = {} }) {
   if (!window.jspdf || !window.html2canvas || typeof Chart === "undefined") {
     throw new Error("les modules PDF n'ont pas pu être chargés, vérifiez votre connexion");
   }
@@ -559,10 +658,13 @@ async function exportRapportPdf({ prenom, nom, mode, result, levels }) {
           <span>${escapeHtml(skill.nom)}</span><span>${escapeHtml(levels[niveau])}</span>
         </div>
         <table class="pdf-table">
-          <colgroup><col width="35%" style="width:35%"><col width="65%" style="width:65%"></colgroup>
-          <thead><tr><th>Sous-compétence</th><th>Ce que vos réponses révèlent</th></tr></thead>
-          <tbody>${skill.items.map((it) => `
-            <tr><td style="${TD} width:35%; max-width:0;"><strong>${escapeHtml(it.sous_competence)}</strong></td><td style="${TD} width:65%; max-width:0;">${escapeHtml(it.texte)}</td></tr>`).join("")}
+          <colgroup><col width="28%" style="width:28%"><col width="52%" style="width:52%"><col width="20%" style="width:20%"></colgroup>
+          <thead><tr><th>Sous-compétence</th><th>Ce que vos réponses révèlent</th><th>Je me reconnais ?</th></tr></thead>
+          <tbody>${skill.items.map((it) => {
+            const v = validations[it.q] || "Non répondu";
+            return `
+            <tr><td style="${TD} width:28%; max-width:0;"><strong>${escapeHtml(it.sous_competence)}</strong></td><td style="${TD} width:52%; max-width:0;">${escapeHtml(it.texte)}</td><td style="${TD} width:20%; max-width:0; font-weight:700; color:${PDF_VALIDATION_COLORS[v]};">${v}</td></tr>`;
+          }).join("")}
           </tbody>
         </table>`;
       page.appendChild(block);
