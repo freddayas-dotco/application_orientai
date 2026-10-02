@@ -4,9 +4,12 @@ Sauvegarde dans Google Sheets (cloud) + CSV local en backup
 """
 
 import csv
+import json
 import os
 from datetime import datetime
 import pandas as pd
+import gspread
+from google.oauth2.service_account import Credentials
 
 # ── Configuration Google Sheets ───────────────────────────────────────────────
 GOOGLE_SHEET_ID = os.environ.get("GOOGLE_SHEET_ID", "1-clYEeefpu5Hx9Cl2Tp-4R1AVRsbACcLZtJVvFPrdZc")
@@ -22,6 +25,22 @@ CREDENTIALS_FILE = os.environ.get("GOOGLE_CREDENTIALS_FILE") or next(
     ) if os.path.exists(p)),
     os.path.join(_BASE_DIR, "google_credentials.json"),
 )
+
+SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive",
+]
+
+
+def _get_client():
+    """Client gspread : GOOGLE_CREDENTIALS_JSON (Render) sinon fichier google_credentials.json (local)."""
+    creds_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+    if creds_json:
+        creds_dict = json.loads(creds_json)
+        creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+    else:
+        creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
+    return gspread.authorize(creds)
 
 
 def _get_credentials(scopes):
@@ -103,15 +122,7 @@ def _get_gsheet():
     try:
         import gspread
 
-        scopes = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ]
-        creds = _get_credentials(scopes)
-        if creds is None:
-            return None
-
-        client = gspread.authorize(creds)
+        client = _get_client()
         sh = client.open_by_key(_get_sheet_id())
 
         try:
@@ -244,15 +255,7 @@ def _get_gsheet_enquete():
     try:
         import gspread
 
-        scopes = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ]
-        creds = _get_credentials(scopes)
-        if creds is None:
-            return None
-
-        client = gspread.authorize(creds)
+        client = _get_client()
         sh = client.open_by_key(_get_sheet_id())
 
         try:
@@ -348,15 +351,7 @@ def _get_gsheet_brutes():
     try:
         import gspread
 
-        scopes = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ]
-        creds = _get_credentials(scopes)
-        if creds is None:
-            return None
-
-        client = gspread.authorize(creds)
+        client = _get_client()
         sh = client.open_by_key(_get_sheet_id())
 
         try:
@@ -428,15 +423,7 @@ def _get_gsheet_validation():
     try:
         import gspread
 
-        scopes = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ]
-        creds = _get_credentials(scopes)
-        if creds is None:
-            return None
-
-        client = gspread.authorize(creds)
+        client = _get_client()
         sh = client.open_by_key(_get_sheet_id())
 
         try:
